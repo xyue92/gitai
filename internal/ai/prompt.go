@@ -17,11 +17,12 @@ type ProjectContext struct {
 
 // PromptBuilder constructs prompts for AI commit message generation
 type PromptBuilder struct {
-	CommitType string
-	Scope      string
-	Diff       string
-	Context    ProjectContext
-	Language   string
+	CommitType     string
+	Scope          string
+	Diff           string
+	Context        ProjectContext
+	Language       string
+	DetailedCommit bool // If true, generate multi-line commit with body
 }
 
 // Build constructs the complete prompt for Ollama
@@ -97,28 +98,59 @@ func (pb *PromptBuilder) Build() string {
 	prompt.WriteString(diff)
 	prompt.WriteString("\n\n")
 
-	// Requirements
+	// Requirements - different based on detailed mode
 	prompt.WriteString("REQUIREMENTS:\n")
 	prompt.WriteString("1. Follow Conventional Commits format\n")
-	prompt.WriteString("2. Be concise (max 72 characters for subject line)\n")
-	prompt.WriteString("3. Focus on WHAT changed and WHY (not HOW)\n")
-	prompt.WriteString(fmt.Sprintf("4. Use %s language\n", language))
-	prompt.WriteString("5. Start with lowercase letter after the type\n")
-	prompt.WriteString("6. Do not include any explanation, just the commit message\n\n")
+	prompt.WriteString("2. Subject line: concise summary (max 72 characters)\n")
+
+	if pb.DetailedCommit {
+		// Detailed mode: include body with explanations
+		prompt.WriteString("3. Body: explain WHAT changed and WHY (2-4 bullet points)\n")
+		prompt.WriteString("4. Focus on the motivation and impact, not implementation details\n")
+		prompt.WriteString(fmt.Sprintf("5. Use %s language\n", language))
+		prompt.WriteString("6. Start subject line with lowercase letter after the type\n")
+		prompt.WriteString("7. Separate subject and body with a blank line\n\n")
+	} else {
+		// Concise mode: subject line only
+		prompt.WriteString("3. Focus on WHAT changed and WHY (concise)\n")
+		prompt.WriteString(fmt.Sprintf("4. Use %s language\n", language))
+		prompt.WriteString("5. Start with lowercase letter after the type\n")
+		prompt.WriteString("6. Generate ONLY the subject line, no body or explanation\n\n")
+	}
 
 	// Output format
 	prompt.WriteString("OUTPUT FORMAT:\n")
-	if pb.Scope != "" {
-		prompt.WriteString(fmt.Sprintf("%s(%s): <message>\n\n", pb.CommitType, pb.Scope))
-		prompt.WriteString("Example:\n")
-		prompt.WriteString(fmt.Sprintf("%s(%s): add user authentication endpoint\n\n", pb.CommitType, pb.Scope))
+	if pb.DetailedCommit {
+		// Detailed format with body
+		if pb.Scope != "" {
+			prompt.WriteString(fmt.Sprintf("%s(%s): <subject line>\n\n<body with bullet points>\n\n", pb.CommitType, pb.Scope))
+			prompt.WriteString("Example:\n")
+			prompt.WriteString(fmt.Sprintf("%s(%s): add user authentication endpoint\n\n", pb.CommitType, pb.Scope))
+			prompt.WriteString("- Implement JWT-based authentication\n")
+			prompt.WriteString("- Add login and logout endpoints\n")
+			prompt.WriteString("- Include token validation middleware\n\n")
+		} else {
+			prompt.WriteString(fmt.Sprintf("%s: <subject line>\n\n<body with bullet points>\n\n", pb.CommitType))
+			prompt.WriteString("Example:\n")
+			prompt.WriteString(fmt.Sprintf("%s: add user authentication endpoint\n\n", pb.CommitType))
+			prompt.WriteString("- Implement JWT-based authentication\n")
+			prompt.WriteString("- Add login and logout endpoints\n")
+			prompt.WriteString("- Include token validation middleware\n\n")
+		}
+		prompt.WriteString("Generate the commit message now (subject + body with details):\n")
 	} else {
-		prompt.WriteString(fmt.Sprintf("%s: <message>\n\n", pb.CommitType))
-		prompt.WriteString("Example:\n")
-		prompt.WriteString(fmt.Sprintf("%s: add user authentication endpoint\n\n", pb.CommitType))
+		// Concise format - subject only
+		if pb.Scope != "" {
+			prompt.WriteString(fmt.Sprintf("%s(%s): <message>\n\n", pb.CommitType, pb.Scope))
+			prompt.WriteString("Example:\n")
+			prompt.WriteString(fmt.Sprintf("%s(%s): add user authentication endpoint\n\n", pb.CommitType, pb.Scope))
+		} else {
+			prompt.WriteString(fmt.Sprintf("%s: <message>\n\n", pb.CommitType))
+			prompt.WriteString("Example:\n")
+			prompt.WriteString(fmt.Sprintf("%s: add user authentication endpoint\n\n", pb.CommitType))
+		}
+		prompt.WriteString("Generate the commit message now (ONLY the subject line):\n")
 	}
-
-	prompt.WriteString("Generate the commit message now (ONLY the commit message, no explanation):\n")
 
 	return prompt.String()
 }

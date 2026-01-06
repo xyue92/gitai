@@ -17,6 +17,7 @@ type Config struct {
 	Scopes         []string     `yaml:"scopes"`
 	CustomPrompt   string       `yaml:"custom_prompt,omitempty"`
 	MaxDiffLength  int          `yaml:"max_diff_length,omitempty"`
+	DetailedCommit bool         `yaml:"detailed_commit,omitempty"` // Generate detailed commit messages with body
 }
 
 // CommitType defines a type of commit with description and emoji
@@ -100,9 +101,10 @@ func DefaultConfig() *Config {
 			{Name: "ci", Desc: "CI configuration changes", Emoji: "👷"},
 			{Name: "build", Desc: "Build system changes", Emoji: "📦"},
 		},
-		Template:      "{type}{scope}: {emoji} {message}",
-		Scopes:        []string{},
-		MaxDiffLength: 2000,
+		Template:       "{type}{scope}: {emoji} {message}",
+		Scopes:         []string{},
+		MaxDiffLength:  2000,
+		DetailedCommit: true, // Default to detailed commits
 	}
 }
 

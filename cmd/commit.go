@@ -122,7 +122,8 @@ func runCommit(cmd *cobra.Command, args []string) error {
 			ReadmeSnippet: ctx.ReadmeSnippet,
 			DiffStats:     ctx.DiffStats,
 		},
-		Language: cfg.Language,
+		Language:       cfg.Language,
+		DetailedCommit: cfg.DetailedCommit,
 	}
 
 	prompt := promptBuilder.Build()

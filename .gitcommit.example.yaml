@@ -15,6 +15,11 @@ template: "{type}{scope}: {emoji} {message}"
 # Maximum length of git diff to send to AI (in characters)
 max_diff_length: 2000
 
+# Generate detailed commit messages with body (recommended: true)
+# If true: generates multi-line commits with subject + body explaining changes
+# If false: generates concise single-line commits (subject only)
+detailed_commit: true
+
 # Predefined commit types following Conventional Commits
 types:
   - name: "feat"
