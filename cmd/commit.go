@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/yourusername/gitai/internal/ai"
@@ -179,13 +180,20 @@ func runCommit(cmd *cobra.Command, args []string) error {
 	maxRetries := 3
 
 	for i := 0; i < maxRetries; i++ {
+		startTime := time.Now()
 		message, err := client.Generate(prompt)
+		elapsed := time.Since(startTime)
+
 		if err != nil {
 			return fmt.Errorf("failed to generate commit message: %w", err)
 		}
 
 		// Clean up the message
 		message = cleanCommitMessage(message)
+
+		// Display time taken
+		display.ShowInfo(fmt.Sprintf("[time elapsed: %.2fs]", elapsed.Seconds()))
+		fmt.Println()
 
 		// Display generated message
 		display.ShowCommitMessage(message)
