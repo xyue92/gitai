@@ -198,15 +198,49 @@ func runCommit(cmd *cobra.Command, args []string) error {
 			display.ShowGenerating()
 			continue
 		case ui.ActionEdit:
-			edited, err := selector.EditMessage(message)
-			if err != nil {
-				return fmt.Errorf("edit cancelled")
+			// Handle edit mode with post-edit options
+			editedMessage := message
+			for {
+				edited, err := selector.EditMessage(editedMessage)
+				if err != nil {
+					return fmt.Errorf("edit cancelled")
+				}
+				editedMessage = edited
+
+				// Display the edited message
+				display.ShowCommitMessage(editedMessage)
+
+				// Ask what to do after editing
+				postEditAction, err := selector.ConfirmActionAfterEdit(editedMessage)
+				if err != nil {
+					return fmt.Errorf("action selection cancelled")
+				}
+
+				switch postEditAction {
+				case ui.ActionUse:
+					finalMessage = editedMessage
+					goto commit
+				case ui.ActionRegenerateFromEdit:
+					// Use the edited message as a prompt to regenerate
+					display.ShowGenerating()
+					promptBuilder.CustomPrompt = fmt.Sprintf("Generate a commit message based on this user input: %s\n\nAlso consider the following diff:", editedMessage)
+					prompt = promptBuilder.Build()
+					// Break out of edit loop and regenerate
+					goto regenerate
+				case ui.ActionEdit:
+					// Continue editing loop
+					continue
+				case ui.ActionCancel:
+					return fmt.Errorf("commit cancelled by user")
+				}
 			}
-			finalMessage = edited
-			goto commit
 		case ui.ActionCancel:
 			return fmt.Errorf("commit cancelled by user")
 		}
+
+	regenerate:
+		// Continue the outer loop to regenerate
+		display.ShowGenerating()
 	}
 
 	return fmt.Errorf("max retries reached")

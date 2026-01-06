@@ -146,6 +146,37 @@ func (cs *CommitSelector) EditMessage(original string) (string, error) {
 	return result, nil
 }
 
+// ConfirmActionAfterEdit asks user what to do after editing the message
+func (cs *CommitSelector) ConfirmActionAfterEdit(message string) (Action, error) {
+	actions := []ActionItem{
+		{Name: "use", Display: "✅ Use this message", Action: ActionUse},
+		{Name: "regenerate", Display: "🔄 Regenerate based on this input", Action: ActionRegenerateFromEdit},
+		{Name: "edit", Display: "✏️  Edit again", Action: ActionEdit},
+		{Name: "cancel", Display: "❌ Cancel", Action: ActionCancel},
+	}
+
+	templates := &promptui.SelectTemplates{
+		Label:    "{{ . }}",
+		Active:   "▸ {{ .Display | cyan }}",
+		Inactive: "  {{ .Display }}",
+		Selected: "{{ .Display | green }}",
+	}
+
+	prompt := promptui.Select{
+		Label:     "What do you want to do?",
+		Items:     actions,
+		Templates: templates,
+		Size:      4,
+	}
+
+	idx, _, err := prompt.Run()
+	if err != nil {
+		return ActionCancel, err
+	}
+
+	return actions[idx].Action, nil
+}
+
 // Confirm asks for yes/no confirmation
 func (cs *CommitSelector) Confirm(message string) (bool, error) {
 	prompt := promptui.Select{
@@ -195,6 +226,7 @@ const (
 	ActionRegenerate
 	ActionEdit
 	ActionCancel
+	ActionRegenerateFromEdit
 )
 
 // ActionItem represents a selectable action
