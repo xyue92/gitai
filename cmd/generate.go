@@ -107,6 +107,7 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		},
 		Language:       cfg.Language,
 		DetailedCommit: cfg.DetailedCommit,
+		CustomPrompt:   cfg.CustomPrompt,
 	}
 
 	prompt := promptBuilder.Build()

@@ -72,12 +72,32 @@ scopes:
   - "config"
   - "docs"
 
-# Custom prompt template (optional)
-# If provided, this will be prepended to the generated prompt
-# Use this to add project-specific context or instructions
+# Custom commit guidelines (IMPORTANT - Company/Team Standards)
+# Paste your company's commit message requirements here
+# The AI will follow these guidelines strictly when generating commits
+#
+# Examples of what you can put here:
+# - Your company's commit message template
+# - Required format or structure
+# - Mandatory fields (ticket numbers, reviewers, etc.)
+# - Naming conventions
+# - Special requirements (emojis, prefixes, etc.)
+#
 custom_prompt: |
-  This is a [Your Project Type] project.
   Follow our team's commit message guidelines:
-  - Be concise and clear
-  - Focus on the "why" not the "how"
   - Use imperative mood (e.g., "add" not "added")
+  - Focus on the "why" and business impact, not the "how"
+  - Keep subject line under 72 characters
+  - Use present tense
+
+  # Example: If your company requires ticket numbers, add:
+  # - Include Jira ticket number: [PROJ-123]
+  # - Format: <type>(<scope>): [TICKET] <description>
+
+  # Example: If your company uses specific prefixes:
+  # - Backend changes must use prefix: [BE]
+  # - Frontend changes must use prefix: [FE]
+
+  # Example: If your company requires specific sections:
+  # - Must include "Business Impact:" section
+  # - Must include "Testing:" section with test coverage info

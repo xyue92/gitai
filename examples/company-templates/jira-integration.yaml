@@ -1,0 +1,72 @@
+# Jira-Integrated Commit Message Template
+# For teams using Jira/Atlassian tools
+
+model: "qwen2.5-coder:7b"
+language: "en"
+detailed_commit: true
+
+custom_prompt: |
+  Follow our Jira-integrated commit message guidelines:
+
+  MANDATORY FORMAT:
+  <type>(<scope>): [JIRA-TICKET] <description>
+
+  <detailed explanation>
+
+  Jira: JIRA-TICKET
+  Reviewer: @username
+
+  REQUIREMENTS:
+  - MUST include Jira ticket number in format [PROJ-123]
+  - MUST include "Jira: PROJ-123" in footer
+  - MUST include "Reviewer: @username" if code review required
+  - Use conventional commit types: feat, fix, docs, refactor, test, chore
+  - Subject line max 72 characters (including ticket)
+  - Body should explain business impact and technical changes
+
+  EXAMPLE:
+  feat(auth): [AUTH-456] add OAuth2 login support
+
+  Implemented OAuth2 authentication flow for enterprise SSO.
+  This allows users to login using their company credentials.
+
+  Business Impact:
+  - Reduces password management overhead
+  - Improves security compliance
+  - Enables enterprise customer onboarding
+
+  Technical Details:
+  - Added OAuth2 library integration
+  - Implemented callback endpoint
+  - Updated user session management
+
+  Jira: AUTH-456
+  Reviewer: @tech-lead
+
+types:
+  - name: "feat"
+    desc: "New feature"
+    emoji: "✨"
+  - name: "fix"
+    desc: "Bug fix"
+    emoji: "🐛"
+  - name: "docs"
+    desc: "Documentation"
+    emoji: "📝"
+  - name: "refactor"
+    desc: "Code refactoring"
+    emoji: "♻️"
+  - name: "test"
+    desc: "Tests"
+    emoji: "✅"
+  - name: "chore"
+    desc: "Maintenance"
+    emoji: "🔧"
+
+scopes:
+  - "api"
+  - "frontend"
+  - "backend"
+  - "auth"
+  - "database"
+  - "infrastructure"

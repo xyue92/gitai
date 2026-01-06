@@ -1,0 +1,98 @@
+# Angular Commit Message Convention
+# Based on Angular's official commit guidelines
+
+model: "qwen2.5-coder:7b"
+language: "en"
+detailed_commit: true
+
+custom_prompt: |
+  Follow Angular commit message convention:
+
+  FORMAT:
+  <type>(<scope>): <subject>
+  <BLANK LINE>
+  <body>
+  <BLANK LINE>
+  <footer>
+
+  TYPE must be one of:
+  - feat: A new feature
+  - fix: A bug fix
+  - docs: Documentation only changes
+  - style: Changes that do not affect the meaning of the code
+  - refactor: A code change that neither fixes a bug nor adds a feature
+  - perf: A code change that improves performance
+  - test: Adding missing tests or correcting existing tests
+  - build: Changes that affect the build system or external dependencies
+  - ci: Changes to CI configuration files and scripts
+  - chore: Other changes that don't modify src or test files
+  - revert: Reverts a previous commit
+
+  SUBJECT:
+  - Use imperative, present tense: "change" not "changed" nor "changes"
+  - Don't capitalize first letter
+  - No dot (.) at the end
+  - Max 50 characters
+
+  BODY:
+  - Use imperative, present tense
+  - Include motivation for the change
+  - Contrast with previous behavior
+  - Wrap at 72 characters
+
+  FOOTER:
+  - Reference GitHub issues: "Closes #123"
+  - Breaking changes: "BREAKING CHANGE: <description>"
+
+  EXAMPLE:
+  feat(parser): add ability to parse arrays
+
+  The parser can now handle array syntax in configuration files.
+  This enables users to define multiple values for a single key.
+
+  Previous behavior required separate keys for each value, which
+  was verbose and error-prone.
+
+  Closes #456
+  BREAKING CHANGE: Array syntax changes the configuration format
+
+types:
+  - name: "feat"
+    desc: "A new feature"
+    emoji: ""
+  - name: "fix"
+    desc: "A bug fix"
+    emoji: ""
+  - name: "docs"
+    desc: "Documentation only changes"
+    emoji: ""
+  - name: "style"
+    desc: "Code style changes"
+    emoji: ""
+  - name: "refactor"
+    desc: "Code refactoring"
+    emoji: ""
+  - name: "perf"
+    desc: "Performance improvements"
+    emoji: ""
+  - name: "test"
+    desc: "Adding or correcting tests"
+    emoji: ""
+  - name: "build"
+    desc: "Build system changes"
+    emoji: ""
+  - name: "ci"
+    desc: "CI configuration changes"
+    emoji: ""
+  - name: "chore"
+    desc: "Other changes"
+    emoji: ""
+
+scopes:
+  - "core"
+  - "common"
+  - "forms"
+  - "http"
+  - "router"
+  - "animations"
+  - "platform-browser"

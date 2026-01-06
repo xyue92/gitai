@@ -1,0 +1,38 @@
+# Google-style Commit Message Template
+# Simplified version inspired by Google's commit practices
+
+model: "qwen2.5-coder:7b"
+language: "en"
+detailed_commit: true
+
+custom_prompt: |
+  Follow Google-style commit message guidelines:
+
+  STRUCTURE:
+  - First line: Brief summary (max 50 characters)
+  - Second line: Blank
+  - Following lines: Detailed explanation
+
+  REQUIREMENTS:
+  - Use imperative mood ("Add feature" not "Added feature")
+  - Capitalize first letter
+  - No period at the end of summary
+  - Body should explain WHAT and WHY (not HOW)
+  - Wrap body at 72 characters
+  - Reference bug/issue numbers if applicable
+
+  FORMAT EXAMPLE:
+  Add user authentication module
+
+  This adds JWT-based authentication to secure API endpoints.
+  Users can now login and receive tokens for authenticated requests.
+
+  Bug: 12345
+  Test: Added unit tests for auth flow
+
+scopes:
+  - "api"
+  - "ui"
+  - "core"
+  - "tests"
+  - "docs"

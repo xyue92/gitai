@@ -22,7 +22,8 @@ type PromptBuilder struct {
 	Diff           string
 	Context        ProjectContext
 	Language       string
-	DetailedCommit bool // If true, generate multi-line commit with body
+	DetailedCommit bool   // If true, generate multi-line commit with body
+	CustomPrompt   string // Custom company/team commit guidelines
 }
 
 // Build constructs the complete prompt for Ollama
@@ -56,6 +57,14 @@ func (pb *PromptBuilder) Build() string {
 		}
 
 		prompt.WriteString("\n")
+	}
+
+	// Custom company/team guidelines (if provided)
+	if pb.CustomPrompt != "" {
+		prompt.WriteString("COMPANY/TEAM COMMIT GUIDELINES:\n")
+		prompt.WriteString(pb.CustomPrompt)
+		prompt.WriteString("\n\n")
+		prompt.WriteString("IMPORTANT: Follow the above guidelines strictly when generating the commit message.\n\n")
 	}
 
 	// Task description

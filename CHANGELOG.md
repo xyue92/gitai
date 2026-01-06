@@ -5,6 +5,17 @@ All notable changes to GitAI will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Custom company templates**: Full support for company/team commit standards
+  - New `custom_prompt` field in config for company-specific guidelines
+  - AI strictly follows your company's commit message requirements
+  - Perfect for teams with mandatory formats, ticket numbers, or specific sections
+  - Example templates provided for popular formats:
+    - Google Style
+    - Jira Integration (with ticket numbers and reviewers)
+    - Chinese Enterprise (完整中文支持)
+    - Angular Convention
+  - Templates located in `examples/company-templates/`
+
 - **Detailed commit messages**: New `detailed_commit` configuration option
   - When `true` (default): Generates multi-line commits with subject + body (2-4 bullet points explaining changes)
   - When `false`: Generates concise single-line commits (subject only)
@@ -12,6 +23,9 @@ All notable changes to GitAI will be documented in this file.
   - Provides better context about WHAT changed and WHY
 
 ### Changed
+- Updated prompt generation to support custom company guidelines
+- Custom prompt is inserted before task description for maximum AI compliance
+- Enhanced example config with detailed instructions on using custom_prompt
 - Updated prompt generation to support both detailed and concise modes
 - Modified default behavior to generate detailed commits by default
 - Improved prompt instructions to clearly separate subject line and body requirements
