@@ -13,13 +13,14 @@ import (
 )
 
 var (
-	dryRun       bool
-	typeFlag     string
-	scopeFlag    string
-	langFlag     string
-	modelFlag    string
-	ticketFlag   string
+	dryRun         bool
+	typeFlag       string
+	scopeFlag      string
+	langFlag       string
+	modelFlag      string
+	ticketFlag     string
 	subjectLenFlag string
+	streamFlag     bool
 )
 
 var commitCmd = &cobra.Command{
@@ -39,6 +40,7 @@ func init() {
 	commitCmd.Flags().StringVarP(&modelFlag, "model", "m", "", "Ollama model to use")
 	commitCmd.Flags().StringVarP(&ticketFlag, "ticket", "k", "", "Ticket/issue number (e.g., JIRA-123)")
 	commitCmd.Flags().StringVarP(&subjectLenFlag, "subject-length", "n", "", "Subject length (short/normal)")
+	commitCmd.Flags().BoolVarP(&streamFlag, "stream", "S", false, "Enable streaming output")
 }
 
 func runCommit(cmd *cobra.Command, args []string) error {
@@ -181,7 +183,21 @@ func runCommit(cmd *cobra.Command, args []string) error {
 
 	for i := 0; i < maxRetries; i++ {
 		startTime := time.Now()
-		message, err := client.Generate(prompt)
+		var message string
+		var err error
+
+		if streamFlag {
+			// Use streaming mode
+			fmt.Print("\n")
+			message, err = client.GenerateStream(prompt, func(chunk string) {
+				fmt.Print(chunk)
+			})
+			fmt.Print("\n\n")
+		} else {
+			// Use non-streaming mode
+			message, err = client.Generate(prompt)
+		}
+
 		elapsed := time.Since(startTime)
 
 		if err != nil {
@@ -195,8 +211,13 @@ func runCommit(cmd *cobra.Command, args []string) error {
 		display.ShowInfo(fmt.Sprintf("[time elapsed: %.2fs]", elapsed.Seconds()))
 		fmt.Println()
 
-		// Display generated message
-		display.ShowCommitMessage(message)
+		// Display generated message (only in non-streaming mode, as streaming already showed it)
+		if !streamFlag {
+			display.ShowCommitMessage(message)
+		} else {
+			// In streaming mode, show the final cleaned message in a box
+			display.ShowCommitMessage(message)
+		}
 
 		// Ask user what to do
 		action, err := selector.ConfirmAction(message)

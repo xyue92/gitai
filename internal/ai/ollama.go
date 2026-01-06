@@ -11,9 +11,10 @@ import (
 
 // OllamaClient handles communication with local Ollama server
 type OllamaClient struct {
-	BaseURL string
-	Model   string
-	Client  *http.Client
+	BaseURL      string
+	Model        string
+	Client       *http.Client
+	EnableStream bool // Enable streaming output
 }
 
 // OllamaRequest represents the request structure for Ollama API
@@ -115,6 +116,79 @@ func (c *OllamaClient) checkConnection() error {
 	}
 
 	return nil
+}
+
+// GenerateStream sends a prompt to Ollama and streams the generated text
+// onChunk is called for each chunk of text received
+func (c *OllamaClient) GenerateStream(prompt string, onChunk func(chunk string)) (string, error) {
+	// Check if Ollama is running
+	if err := c.checkConnection(); err != nil {
+		return "", fmt.Errorf("cannot connect to Ollama: %w\nPlease make sure Ollama is running:\n  $ ollama serve", err)
+	}
+
+	// Prepare request
+	reqBody := OllamaRequest{
+		Model:  c.Model,
+		Prompt: prompt,
+		Stream: true,
+	}
+
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	// Send request
+	url := c.BaseURL + "/api/generate"
+	resp, err := c.Client.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Check status code
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		var errResp OllamaResponse
+		if err := json.Unmarshal(body, &errResp); err == nil && errResp.Error != "" {
+			if contains(errResp.Error, "model") && contains(errResp.Error, "not found") {
+				return "", fmt.Errorf("model '%s' not found\nInstall it with:\n  $ ollama pull %s", c.Model, c.Model)
+			}
+			return "", fmt.Errorf("ollama error: %s", errResp.Error)
+		}
+		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	// Read streaming response
+	decoder := json.NewDecoder(resp.Body)
+	var fullResponse string
+
+	for {
+		var chunk OllamaResponse
+		if err := decoder.Decode(&chunk); err != nil {
+			if err == io.EOF {
+				break
+			}
+			return "", fmt.Errorf("failed to decode chunk: %w", err)
+		}
+
+		if chunk.Error != "" {
+			return "", fmt.Errorf("ollama error: %s", chunk.Error)
+		}
+
+		if chunk.Response != "" {
+			fullResponse += chunk.Response
+			if onChunk != nil {
+				onChunk(chunk.Response)
+			}
+		}
+
+		if chunk.Done {
+			break
+		}
+	}
+
+	return fullResponse, nil
 }
 
 // contains checks if a string contains a substring
