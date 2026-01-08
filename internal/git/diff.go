@@ -93,3 +93,106 @@ func IsGitRepository() bool {
 	err := cmd.Run()
 	return err == nil
 }
+
+// CommitTypeHint represents a suggested commit type based on file analysis
+type CommitTypeHint struct {
+	Type  string
+	Files []string
+}
+
+// AnalyzeFileTypes analyzes changed files and suggests commit types
+// Returns a list of detected commit types with their associated files
+func AnalyzeFileTypes(files []string) []CommitTypeHint {
+	typeMap := make(map[string][]string)
+
+	for _, file := range files {
+		commitType := detectFileType(file)
+		typeMap[commitType] = append(typeMap[commitType], file)
+	}
+
+	// Convert map to slice and sort by priority
+	var hints []CommitTypeHint
+	priorityOrder := []string{"feat", "fix", "docs", "test", "style", "refactor", "perf", "build", "ci", "chore"}
+
+	for _, typeStr := range priorityOrder {
+		if files, exists := typeMap[typeStr]; exists {
+			hints = append(hints, CommitTypeHint{
+				Type:  typeStr,
+				Files: files,
+			})
+		}
+	}
+
+	return hints
+}
+
+// detectFileType determines the likely commit type based on file path
+func detectFileType(file string) string {
+	file = strings.ToLower(file)
+
+	// Documentation files
+	if strings.HasSuffix(file, ".md") ||
+	   strings.HasSuffix(file, ".mdx") ||
+	   strings.HasSuffix(file, ".rst") ||
+	   strings.Contains(file, "readme") ||
+	   strings.Contains(file, "docs/") ||
+	   strings.Contains(file, "documentation/") ||
+	   strings.HasSuffix(file, ".txt") && strings.Contains(file, "doc") {
+		return "docs"
+	}
+
+	// Test files
+	if strings.Contains(file, "_test.") ||
+	   strings.Contains(file, ".test.") ||
+	   strings.Contains(file, "/test/") ||
+	   strings.Contains(file, "/tests/") ||
+	   strings.Contains(file, "__tests__/") ||
+	   strings.Contains(file, ".spec.") {
+		return "test"
+	}
+
+	// CI/CD files
+	if strings.Contains(file, ".github/workflows/") ||
+	   strings.Contains(file, ".gitlab-ci") ||
+	   strings.Contains(file, "jenkinsfile") ||
+	   strings.Contains(file, ".circleci/") ||
+	   strings.Contains(file, ".travis.yml") {
+		return "ci"
+	}
+
+	// Build/config files
+	if strings.HasSuffix(file, "package.json") ||
+	   strings.HasSuffix(file, "package-lock.json") ||
+	   strings.HasSuffix(file, "go.mod") ||
+	   strings.HasSuffix(file, "go.sum") ||
+	   strings.HasSuffix(file, "cargo.toml") ||
+	   strings.HasSuffix(file, "cargo.lock") ||
+	   strings.HasSuffix(file, "pom.xml") ||
+	   strings.HasSuffix(file, "build.gradle") ||
+	   strings.HasSuffix(file, "dockerfile") ||
+	   strings.HasSuffix(file, "makefile") ||
+	   strings.HasSuffix(file, ".yaml") && strings.Contains(file, "config") ||
+	   strings.HasSuffix(file, ".yml") && strings.Contains(file, "config") ||
+	   strings.HasSuffix(file, ".toml") ||
+	   strings.HasSuffix(file, ".json") && strings.Contains(file, "config") {
+		return "build"
+	}
+
+	// Style files
+	if strings.HasSuffix(file, ".css") ||
+	   strings.HasSuffix(file, ".scss") ||
+	   strings.HasSuffix(file, ".sass") ||
+	   strings.HasSuffix(file, ".less") {
+		return "style"
+	}
+
+	// Default to feat for code files, chore for others
+	codeExtensions := []string{".go", ".js", ".ts", ".jsx", ".tsx", ".py", ".java", ".c", ".cpp", ".rs", ".rb", ".php", ".swift", ".kt"}
+	for _, ext := range codeExtensions {
+		if strings.HasSuffix(file, ext) {
+			return "feat"
+		}
+	}
+
+	return "chore"
+}

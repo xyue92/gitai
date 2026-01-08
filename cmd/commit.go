@@ -95,8 +95,37 @@ func runCommit(cmd *cobra.Command, args []string) error {
 	// Display changed files
 	display.ShowChangedFiles(fileChanges)
 
+	// Analyze file types to detect mixed commits
+	files := make([]string, len(fileChanges))
+	for i, fc := range fileChanges {
+		files[i] = fc.File
+	}
+	typeHints := git.AnalyzeFileTypes(files)
+
 	// Create selector for interactive prompts
 	selector := ui.NewCommitSelector(cfg)
+
+	// Warn if multiple commit types detected
+	if len(typeHints) > 1 {
+		display.ShowWarning("⚠️  Multiple commit types detected in staged files:")
+		for _, hint := range typeHints {
+			display.ShowInfo(fmt.Sprintf("  • %s: %d file(s)", hint.Type, len(hint.Files)))
+			for _, file := range hint.Files {
+				fmt.Printf("    - %s\n", file)
+			}
+		}
+		fmt.Println()
+		display.ShowInfo("💡 Best practice: Split into separate commits for better history")
+		display.ShowInfo("   You can unstage files with: git restore --staged <file>")
+		fmt.Println()
+
+		// Ask user if they want to continue
+		shouldContinue, err := selector.Confirm("Do you want to continue with mixed commit types?")
+		if err != nil || !shouldContinue {
+			return fmt.Errorf("commit cancelled - please split your changes into separate commits")
+		}
+		fmt.Println()
+	}
 
 	// Select commit type
 	commitType := typeFlag
@@ -301,10 +330,6 @@ commit:
 
 	// Show success
 	fmt.Println()
-	files := make([]string, len(fileChanges))
-	for i, fc := range fileChanges {
-		files[i] = fc.File
-	}
 	display.ShowCommitSuccess(finalMessage, files)
 
 	return nil
