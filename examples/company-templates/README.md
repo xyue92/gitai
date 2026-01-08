@@ -59,36 +59,36 @@ Reviewer: @tech-lead
 ---
 
 ### 3. Chinese Enterprise ([chinese-enterprise.yaml](chinese-enterprise.yaml))
-**适用于**: 中国企业开发团队
+**Best for**: Chinese enterprise development teams
 
-**特点**:
-- 完全中文描述
-- 包含影响范围说明
-- 测试情况说明
-- 关联需求文档
+**Features**:
+- Complete Chinese descriptions
+- Includes impact scope description
+- Testing status description
+- Linked requirement documents
 
-**示例输出**:
+**Example Output**:
 ```
-feat(用户中心): 新增用户登录功能
+feat(user-center): add user login feature
 
-实现了基于JWT的用户登录认证功能，用户可以通过手机号和验证码登录系统。
+Implemented JWT-based user login authentication, users can login to the system via phone number and verification code.
 
-改动内容：
-- 新增登录接口和验证码发送接口
-- 实现JWT token生成和验证逻辑
-- 添加登录状态管理中间件
+Changes:
+- Added login API and verification code sending API
+- Implemented JWT token generation and verification logic
+- Added login state management middleware
 
-改动原因：
-- 满足产品V2.0版本用户登录需求
-- 提升系统安全性，替代原有简单密码登录
+Reason for Changes:
+- Meets product V2.0 user login requirements
+- Improves system security, replacing original simple password login
 
-业务价值：
-- 提升用户登录体验，降低密码遗忘率
-- 增强系统安全性，符合等保2.0要求
+Business Value:
+- Improves user login experience, reduces password forgetting rate
+- Enhances system security, meets Security Level Protection 2.0 requirements
 
-影响范围: 用户中心模块、API网关、前端登录页面
-测试情况: 已完成单元测试、集成测试、UAT测试
-关联需求: PRD-2024-001-用户登录改造
+Impact Scope: User center module, API gateway, frontend login page
+Testing Status: Completed unit tests, integration tests, UAT tests
+Related Requirements: PRD-2024-001-User-Login-Redesign
 ```
 
 ---

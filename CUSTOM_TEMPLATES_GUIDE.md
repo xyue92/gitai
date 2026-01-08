@@ -1,69 +1,69 @@
-# 自定义公司Commit规范使用指南
+# Custom Company Commit Standards Guide
 
-## 快速开始
+## Quick Start
 
-### 方式1：使用现成模板
+### Method 1: Use Pre-made Templates
 
-我们提供了4个常用的公司commit规范模板，直接复制使用：
+We provide 4 commonly used company commit standard templates that you can use directly:
 
 ```bash
-# 查看所有模板
+# View all templates
 ls examples/company-templates/
 
-# 复制你需要的模板到项目根目录
+# Copy the template you need to your project root
 cp examples/company-templates/jira-integration.yaml .gitcommit.yaml
 
-# 开始使用
+# Start using
 git add .
 gitai commit
 ```
 
-### 方式2：粘贴公司规范
+### Method 2: Paste Your Company Standards
 
-1. 创建配置文件：
+1. Create a configuration file:
 ```bash
 gitai config --init
 ```
 
-2. 编辑 `.gitcommit.yaml`，在 `custom_prompt` 部分粘贴你公司的commit规范：
+2. Edit `.gitcommit.yaml` and paste your company's commit standards in the `custom_prompt` section:
 
 ```yaml
 custom_prompt: |
-  [直接粘贴你们公司的commit规范文档]
+  [Paste your company's commit standards document here]
 
-  比如：
-  提交格式要求：
-  - 必须包含Jira ticket: [PROJ-123]
-  - 必须包含reviewer: @姓名
-  - 必须说明业务影响
-  - 必须说明测试情况
+  For example:
+  Commit format requirements:
+  - Must include Jira ticket: [PROJ-123]
+  - Must include reviewer: @name
+  - Must explain business impact
+  - Must describe testing status
 ```
 
-3. 使用：
+3. Use:
 ```bash
 git add .
 gitai commit
 ```
 
-AI会严格按照你粘贴的规范生成commit消息！
+The AI will strictly follow the standards you pasted to generate commit messages!
 
 ---
 
-## 现成模板说明
+## Pre-made Template Documentation
 
-### 1. Jira集成模板 (推荐企业使用)
+### 1. Jira Integration Template (Recommended for Enterprises)
 
-**适用场景**：使用Jira管理需求的团队
+**Use case**: Teams using Jira for requirement management
 
-**文件**：`examples/company-templates/jira-integration.yaml`
+**File**: `examples/company-templates/jira-integration.yaml`
 
-**特点**：
-- ✅ 强制包含Jira ticket编号
-- ✅ 包含Reviewer字段
-- ✅ 区分业务影响和技术细节
-- ✅ 完整的footer信息
+**Features**:
+- ✅ Mandatory Jira ticket number
+- ✅ Includes Reviewer field
+- ✅ Distinguishes business impact from technical details
+- ✅ Complete footer information
 
-**生成示例**：
+**Generated Example**:
 ```
 feat(auth): [AUTH-456] add OAuth2 login support
 
@@ -84,74 +84,74 @@ Jira: AUTH-456
 Reviewer: @tech-lead
 ```
 
-**使用方法**：
+**How to use**:
 ```bash
 cp examples/company-templates/jira-integration.yaml .gitcommit.yaml
-# 修改模板中的示例ticket编号为你们公司的前缀
+# Modify the example ticket number prefix to match your company's
 vim .gitcommit.yaml
 ```
 
 ---
 
-### 2. 中国企业模板 (推荐国内团队)
+### 2. Chinese Enterprise Template (Recommended for Domestic Teams)
 
-**适用场景**：国内企业，要求中文commit，有PRD文档管理
+**Use case**: Chinese companies requiring Chinese commits with PRD documentation management
 
-**文件**：`examples/company-templates/chinese-enterprise.yaml`
+**File**: `examples/company-templates/chinese-enterprise.yaml`
 
-**特点**：
-- ✅ 完全中文描述
-- ✅ 包含影响范围
-- ✅ 包含测试情况
-- ✅ 关联PRD需求文档
-- ✅ 符合国内企业开发流程
+**Features**:
+- ✅ Complete Chinese descriptions
+- ✅ Includes impact scope
+- ✅ Includes testing status
+- ✅ Links to PRD requirement documents
+- ✅ Complies with Chinese enterprise development process
 
-**生成示例**：
+**Generated Example**:
 ```
-feat(用户中心): 新增用户登录功能
+feat(user-center): add user login feature
 
-实现了基于JWT的用户登录认证功能，用户可以通过手机号和验证码登录系统。
+Implemented JWT-based user login authentication, users can login to the system via phone number and verification code.
 
-改动内容：
-- 新增登录接口和验证码发送接口
-- 实现JWT token生成和验证逻辑
-- 添加登录状态管理中间件
+Changes:
+- Added login API and verification code sending API
+- Implemented JWT token generation and verification logic
+- Added login state management middleware
 
-改动原因：
-- 满足产品V2.0版本用户登录需求
-- 提升系统安全性，替代原有简单密码登录
+Reason for Changes:
+- Meets product V2.0 user login requirements
+- Improves system security, replacing original simple password login
 
-业务价值：
-- 提升用户登录体验，降低密码遗忘率
-- 增强系统安全性，符合等保2.0要求
+Business Value:
+- Improves user login experience, reduces password forgetting rate
+- Enhances system security, meets Security Level Protection 2.0 requirements
 
-影响范围: 用户中心模块、API网关、前端登录页面
-测试情况: 已完成单元测试、集成测试、UAT测试
-关联需求: PRD-2024-001-用户登录改造
+Impact Scope: User center module, API gateway, frontend login page
+Testing Status: Completed unit tests, integration tests, UAT tests
+Related Requirements: PRD-2024-001-User-Login-Redesign
 ```
 
-**使用方法**：
+**How to use**:
 ```bash
 cp examples/company-templates/chinese-enterprise.yaml .gitcommit.yaml
-# 修改scope为你们项目的模块名
+# Modify scopes to match your project's module names
 vim .gitcommit.yaml
 ```
 
 ---
 
-### 3. Google风格模板
+### 3. Google Style Template
 
-**适用场景**：追求简洁专业的团队
+**Use case**: Teams pursuing concise professionalism
 
-**文件**：`examples/company-templates/google-style.yaml`
+**File**: `examples/company-templates/google-style.yaml`
 
-**特点**：
-- ✅ 50字符简短标题
-- ✅ 详细的body解释
-- ✅ Bug编号引用
-- ✅ Test说明
+**Features**:
+- ✅ 50-character short title
+- ✅ Detailed body explanation
+- ✅ Bug number references
+- ✅ Test descriptions
 
-**生成示例**：
+**Generated Example**:
 ```
 Add user authentication module
 
@@ -164,19 +164,19 @@ Test: Added unit tests for auth flow
 
 ---
 
-### 4. Angular规范模板
+### 4. Angular Convention Template
 
-**适用场景**：Angular项目或遵循严格Conventional Commits的团队
+**Use case**: Angular projects or teams following strict Conventional Commits
 
-**文件**：`examples/company-templates/angular-style.yaml`
+**File**: `examples/company-templates/angular-style.yaml`
 
-**特点**：
-- ✅ 严格的conventional commits
-- ✅ Breaking changes追踪
-- ✅ Issue引用
-- ✅ 无emoji（专业风格）
+**Features**:
+- ✅ Strict conventional commits
+- ✅ Breaking changes tracking
+- ✅ Issue references
+- ✅ No emoji (professional style)
 
-**生成示例**：
+**Generated Example**:
 ```
 feat(parser): add ability to parse arrays
 
@@ -189,55 +189,55 @@ BREAKING CHANGE: Array syntax changes the configuration format
 
 ---
 
-## 自定义你自己的规范
+## Customize Your Own Standards
 
-### 步骤1：创建配置文件
+### Step 1: Create Configuration File
 
 ```bash
 gitai config --init
 ```
 
-### 步骤2：编辑 custom_prompt
+### Step 2: Edit custom_prompt
 
-打开 `.gitcommit.yaml`，找到 `custom_prompt` 部分：
+Open `.gitcommit.yaml` and find the `custom_prompt` section:
 
 ```yaml
 custom_prompt: |
-  # 在这里粘贴你公司的commit规范
+  # Paste your company's commit standards here
 ```
 
-### 步骤3：粘贴公司规范
+### Step 3: Paste Company Standards
 
-把你们公司的commit规范文档直接粘贴进去。例如：
+Paste your company's commit standards document directly. For example:
 
-#### 示例1：强制包含工单号
+#### Example 1: Mandatory Work Order Number
 
 ```yaml
 custom_prompt: |
-  提交规范：
-  - 格式：<类型>(<模块>): [工单号] <描述>
-  - 工单号格式：WO-YYYYMMDD-XXX
-  - 必须包含工单号
+  Commit Standards:
+  - Format: <type>(<module>): [work-order-number] <description>
+  - Work order format: WO-YYYYMMDD-XXX
+  - Work order number is mandatory
 
-  示例：
-  feat(支付): [WO-20250106-001] 新增支付宝支付
+  Example:
+  feat(payment): [WO-20250106-001] add Alipay payment
 
-  实现支付宝扫码支付功能，支持订单金额自动计算。
+  Implemented Alipay QR code payment feature with automatic order amount calculation.
 
-  工单号: WO-20250106-001
-  测试人: @测试工程师
+  Work Order: WO-20250106-001
+  Tester: @qa-engineer
 ```
 
-#### 示例2：强制包含审核人
+#### Example 2: Mandatory Reviewers
 
 ```yaml
 custom_prompt: |
-  Commit规范：
-  - 所有commit必须包含Code Reviewer
-  - 所有commit必须包含QA Tester
-  - 格式：Reviewed-by: @username, Tested-by: @username
+  Commit Standards:
+  - All commits must include Code Reviewer
+  - All commits must include QA Tester
+  - Format: Reviewed-by: @username, Tested-by: @username
 
-  示例：
+  Example:
   feat(api): add payment endpoint
 
   Added new payment processing endpoint for Stripe integration.
@@ -246,182 +246,182 @@ custom_prompt: |
   Tested-by: @jane-doe
 ```
 
-#### 示例3：强制包含影响范围
+#### Example 3: Mandatory Impact Scope
 
 ```yaml
 custom_prompt: |
-  提交要求：
-  - 必须说明"影响范围"（前端/后端/数据库/全部）
-  - 必须说明"是否需要发版"（是/否）
-  - 必须说明"回滚方案"
+  Commit Requirements:
+  - Must specify "Impact Scope" (frontend/backend/database/all)
+  - Must specify "Requires Release" (yes/no)
+  - Must specify "Rollback Plan"
 
-  示例：
-  feat(订单): 新增订单取消功能
+  Example:
+  feat(orders): add order cancellation feature
 
-  用户可以在30分钟内取消未支付订单。
+  Users can cancel unpaid orders within 30 minutes.
 
-  影响范围: 后端API + 前端订单页面
-  是否需要发版: 是
-  回滚方案: 回滚到上一个稳定版本即可
+  Impact Scope: Backend API + Frontend order page
+  Requires Release: Yes
+  Rollback Plan: Rollback to previous stable version
 ```
 
 ---
 
-## 高级技巧
+## Advanced Tips
 
-### 技巧1：多项目不同规范
+### Tip 1: Different Standards for Multiple Projects
 
-如果你有多个项目，每个项目用不同规范：
+If you have multiple projects with different standards:
 
 ```bash
-# 项目A - 使用Jira
+# Project A - Using Jira
 cd ~/projects/project-a
 cp ~/gitai/examples/company-templates/jira-integration.yaml .gitcommit.yaml
 
-# 项目B - 使用中文规范
+# Project B - Using Chinese standards
 cd ~/projects/project-b
 cp ~/gitai/examples/company-templates/chinese-enterprise.yaml .gitcommit.yaml
 
-# 项目C - 自定义规范
+# Project C - Custom standards
 cd ~/projects/project-c
 gitai config --init
-vim .gitcommit.yaml  # 粘贴公司规范
+vim .gitcommit.yaml  # Paste company standards
 ```
 
-GitAI会在每个项目目录自动使用该项目的 `.gitcommit.yaml`！
+GitAI will automatically use each project's `.gitcommit.yaml`!
 
-### 技巧2：团队共享配置
+### Tip 2: Team Shared Configuration
 
-把配置文件提交到git仓库，整个团队共享：
+Commit the configuration file to your git repository for the whole team to share:
 
 ```bash
-# 1. 创建团队配置
+# 1. Create team configuration
 gitai config --init
 
-# 2. 编辑为团队规范
+# 2. Edit to team standards
 vim .gitcommit.yaml
 
-# 3. 提交到仓库
+# 3. Commit to repository
 git add .gitcommit.yaml
 git commit -m "chore: add team commit message standards"
 git push
 
-# 4. 团队成员拉取后自动使用
-git pull  # 其他成员执行
-gitai commit  # 自动使用团队规范
+# 4. Team members automatically use it after pulling
+git pull  # Other members run this
+gitai commit  # Automatically uses team standards
 ```
 
-### 技巧3：使用环境变量区分环境
+### Tip 3: Use Environment Variables to Distinguish Environments
 
 ```yaml
 custom_prompt: |
-  # 开发环境可以简单一些
-  # 生产环境必须详细
+  # Development environment can be simpler
+  # Production environment must be detailed
 
   {% if env == "production" %}
-  必须包含：
-  - 完整测试报告
-  - 上线检查清单
-  - 回滚预案
+  Must include:
+  - Complete test report
+  - Launch checklist
+  - Rollback plan
   {% else %}
-  可以简化格式
+  Can simplify format
   {% endif %}
 ```
 
 ---
 
-## 测试你的配置
+## Testing Your Configuration
 
-配置完成后，测试是否符合预期：
+After configuration is complete, test if it meets expectations:
 
 ```bash
-# 1. 做一些改动
+# 1. Make some changes
 echo "test" > test.txt
 git add test.txt
 
-# 2. 使用dry-run模式测试
+# 2. Test with dry-run mode
 gitai commit --dry-run
 
-# 3. 检查生成的commit是否符合公司规范
-# 如果不符合，调整 custom_prompt 再试
+# 3. Check if generated commit meets company standards
+# If not, adjust custom_prompt and try again
 ```
 
 ---
 
-## 常见问题
+## Common Questions
 
-### Q: AI会严格遵守我的规范吗？
+### Q: Will AI strictly follow my standards?
 
-**A**: 会！AI会严格按照你的 `custom_prompt` 生成commit。我们在prompt中明确指示：
+**A**: Yes! AI will strictly generate commits according to your `custom_prompt`. We explicitly instruct in the prompt:
 > "IMPORTANT: Follow the above guidelines strictly when generating the commit message."
 
-### Q: 可以用中英文混合吗？
+### Q: Can I mix Chinese and English?
 
-**A**: 可以！但建议指定主要语言：
+**A**: Yes! But we recommend specifying the main language:
 ```yaml
-language: "zh"  # 或 "en"
+language: "zh"  # or "en"
 custom_prompt: |
-  中文为主，专业术语可以用英文
-  例如：feat(API): 新增JWT认证
+  Mainly Chinese, technical terms can be in English
+  Example: feat(API): add JWT authentication
 ```
 
-### Q: 能强制包含特定字段吗？
+### Q: Can I force specific fields?
 
-**A**: 完全可以！在 `custom_prompt` 中明确要求：
+**A**: Absolutely! Clearly state in `custom_prompt`:
 ```yaml
 custom_prompt: |
-  必须包含以下字段：
+  Must include the following fields:
   Ticket: XXX-123
   Reviewer: @name
   Testing: description
 
-  如果缺少任何字段，commit无效！
+  If any field is missing, the commit is invalid!
 ```
 
-AI会生成包含这些字段的commit。
+AI will generate commits containing these fields.
 
-### Q: 公司规范很长怎么办？
+### Q: What if company standards are very long?
 
-**A**: 没问题，`custom_prompt` 支持多行长文本：
+**A**: No problem, `custom_prompt` supports multi-line long text:
 ```yaml
 custom_prompt: |
-  [粘贴你们完整的几页规范文档]
+  [Paste your complete multi-page standards document]
   ...
   ...
-  [所有要求都粘贴进来]
+  [All requirements pasted here]
 ```
 
-### Q: 可以引用外部文件吗？
+### Q: Can I reference external files?
 
-**A**: 目前不支持，但你可以复制粘贴。我们建议把规范直接写在配置文件中，这样：
-- 版本控制更方便
-- 团队共享更简单
-- 不依赖外部文件
+**A**: Not currently supported, but you can copy and paste. We recommend writing standards directly in the config file because:
+- Easier version control
+- Simpler team sharing
+- No dependency on external files
 
 ---
 
-## 真实案例
+## Real-World Cases
 
-### 案例1：某金融科技公司
+### Case 1: A Fintech Company
 
-**需求**：
-- 必须包含JIRA ticket
-- 必须包含安全审核人
-- 必须说明是否涉及客户数据
+**Requirements**:
+- Must include JIRA ticket
+- Must include security reviewer
+- Must state if customer data is involved
 
-**配置**：
+**Configuration**:
 ```yaml
 custom_prompt: |
-  金融科技公司提交规范：
+  Fintech Company Commit Standards:
 
-  格式：<type>(<module>): [JIRA-XXX] <description>
+  Format: <type>(<module>): [JIRA-XXX] <description>
 
-  必须包含：
+  Must include:
   Security Review: @security-lead
   Customer Data: Yes/No
   Compliance: Checked/Waived
 
-  示例：
+  Example:
   feat(payment): [PAY-789] add encryption for card data
 
   Implemented AES-256 encryption for credit card storage.
@@ -431,58 +431,58 @@ custom_prompt: |
   Compliance: Checked - Meets PCI-DSS requirements
 ```
 
-### 案例2：某互联网大厂
+### Case 2: A Large Internet Company
 
-**需求**：
-- 中文commit
-- 必须关联PRD
-- 必须说明灰度方案
+**Requirements**:
+- Chinese commits
+- Must link to PRD
+- Must describe gradual rollout plan
 
-**配置**：
+**Configuration**:
 ```yaml
 language: "zh"
 custom_prompt: |
-  大厂提交规范：
+  Large Company Commit Standards:
 
-  格式：<类型>(<业务域>): <需求编号> <描述>
+  Format: <type>(<business-domain>): <requirement-number> <description>
 
-  必填项：
-  - 关联PRD: PRD-YYYYMMDD-XXX
-  - 灰度方案: 描述
-  - 监控指标: 列表
+  Required fields:
+  - Related PRD: PRD-YYYYMMDD-XXX
+  - Rollout Plan: description
+  - Monitoring Metrics: list
 
-  示例：
-  feat(推荐系统): PRD-20250106-001 新增个性化推荐算法
+  Example:
+  feat(recommendation): PRD-20250106-001 add personalized recommendation algorithm
 
-  实现基于协同过滤的个性化推荐功能。
+  Implemented collaborative filtering-based personalized recommendation.
 
-  关联PRD: PRD-20250106-001
-  灰度方案: 10% -> 30% -> 100%，每阶段观察24小时
-  监控指标: CTR、转化率、页面停留时长
+  Related PRD: PRD-20250106-001
+  Rollout Plan: 10% -> 30% -> 100%, monitor 24 hours each stage
+  Monitoring Metrics: CTR, conversion rate, page dwell time
 ```
 
 ---
 
-## 总结
+## Summary
 
-使用GitAI的自定义模板功能，你可以：
+Using GitAI's custom template feature, you can:
 
-✅ **完全自动化**公司commit规范
-✅ **零学习成本**：直接粘贴公司文档
-✅ **团队协作**：配置文件提交到仓库共享
-✅ **多项目支持**：每个项目独立配置
-✅ **国际化**：支持中英文及其他语言
+✅ **Fully automate** company commit standards
+✅ **Zero learning cost**: Just paste company documents
+✅ **Team collaboration**: Commit config file to repository for sharing
+✅ **Multi-project support**: Independent configuration per project
+✅ **Internationalization**: Supports Chinese, English, and other languages
 
-开始使用：
+Start using:
 ```bash
-# 选择一个模板
+# Choose a template
 cp examples/company-templates/jira-integration.yaml .gitcommit.yaml
 
-# 或者自己写
+# Or write your own
 gitai config --init
 
-# 开始享受自动化commit
+# Start enjoying automated commits
 gitai commit
 ```
 
-🎉 从此告别手写commit，AI帮你严格遵守公司规范！
+🎉 Say goodbye to manual commits, let AI help you strictly follow company standards!

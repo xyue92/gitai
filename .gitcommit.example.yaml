@@ -25,6 +25,12 @@ detailed_commit: true
 # normal: max 72 characters - standard conventional commits length (default)
 subject_length: "normal"
 
+# Scope prompt configuration
+# Set to true to prompt for scope selection interactively
+# Set to false (default) to skip scope prompt
+# Note: You can always provide scope via --scope flag or use --prompt-scope flag
+prompt_scope: false
+
 # Ticket/Issue number configuration
 # Enable if your team requires ticket numbers in commits (e.g., Jira, GitHub issues)
 require_ticket: false                  # Set to true to make ticket number mandatory
