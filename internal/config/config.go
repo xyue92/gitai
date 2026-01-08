@@ -18,6 +18,7 @@ type Config struct {
 	CustomPrompt   string       `yaml:"custom_prompt,omitempty"`
 	MaxDiffLength  int          `yaml:"max_diff_length,omitempty"`
 	DetailedCommit bool         `yaml:"detailed_commit,omitempty"` // Generate detailed commit messages with body
+	PromptScope    bool         `yaml:"prompt_scope,omitempty"`    // Whether to prompt for scope (default: false)
 	RequireTicket  bool         `yaml:"require_ticket,omitempty"`  // Require ticket/issue number
 	TicketPattern  string       `yaml:"ticket_pattern,omitempty"`  // Pattern for ticket numbers (e.g., "PROJ-\d+")
 	TicketPrefix   string       `yaml:"ticket_prefix,omitempty"`   // Default ticket prefix (e.g., "JIRA", "PROJ")

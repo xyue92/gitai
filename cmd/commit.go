@@ -13,14 +13,15 @@ import (
 )
 
 var (
-	dryRun         bool
-	typeFlag       string
-	scopeFlag      string
-	langFlag       string
-	modelFlag      string
-	ticketFlag     string
-	subjectLenFlag string
-	streamFlag     bool
+	dryRun          bool
+	typeFlag        string
+	scopeFlag       string
+	langFlag        string
+	modelFlag       string
+	ticketFlag      string
+	subjectLenFlag  string
+	streamFlag      bool
+	promptScopeFlag bool
 )
 
 var commitCmd = &cobra.Command{
@@ -41,6 +42,7 @@ func init() {
 	commitCmd.Flags().StringVarP(&ticketFlag, "ticket", "k", "", "Ticket/issue number (e.g., JIRA-123)")
 	commitCmd.Flags().StringVarP(&subjectLenFlag, "subject-length", "n", "", "Subject length (short/normal)")
 	commitCmd.Flags().BoolVarP(&streamFlag, "stream", "S", false, "Enable streaming output")
+	commitCmd.Flags().BoolVarP(&promptScopeFlag, "prompt-scope", "p", false, "Prompt for scope selection")
 }
 
 func runCommit(cmd *cobra.Command, args []string) error {
@@ -74,6 +76,9 @@ func runCommit(cmd *cobra.Command, args []string) error {
 	if subjectLenFlag != "" {
 		cfg.SubjectLength = subjectLenFlag
 	}
+	if promptScopeFlag {
+		cfg.PromptScope = true
+	}
 
 	// Get staged changes
 	diff, err := git.GetStagedDiff()
@@ -102,9 +107,9 @@ func runCommit(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// Select scope
+	// Select scope - only prompt if explicitly requested via flag or config
 	scope := scopeFlag
-	if scopeFlag == "" {
+	if scopeFlag == "" && cfg.PromptScope {
 		scope, err = selector.SelectScope()
 		if err != nil {
 			return fmt.Errorf("scope selection cancelled")
