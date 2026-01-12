@@ -4,6 +4,44 @@ All notable changes to GitAI will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-01-12
+
+### Added
+- **Self-Update Command**: New `gitai update` command for automatic updates
+  - `gitai update` - Update to the latest version
+  - `gitai update --check` - Check for updates without installing
+  - `gitai update --force` - Force update even if already on latest version
+- Automatic platform detection (macOS, Linux, Windows) and architecture (amd64, arm64)
+- SHA256 checksum verification for secure updates
+- Atomic binary replacement with automatic backup and rollback mechanism
+- Unified `checksums.txt` file generation in release workflow
+
+### Changed
+- Enhanced GitHub Actions release workflow to generate unified checksums file
+- Updated release notes template to include self-update instructions
+- Improved documentation with dedicated "Updating" section in README
+- Added migration notes for v0.1.0 users
+
+### Migration Guide for v0.1.0 Users
+The `update` command was introduced in v0.2.0. To upgrade from v0.1.0, use one of these methods:
+
+1. **Install Script** (Recommended):
+   ```bash
+   # macOS/Linux
+   curl -sSL https://raw.githubusercontent.com/xyue92/gitai/main/scripts/install.sh | bash
+   ```
+
+2. **Homebrew**:
+   ```bash
+   brew upgrade gitai
+   ```
+
+3. **Manual Download**: Download from [releases](https://github.com/xyue92/gitai/releases/latest)
+
+Once on v0.2.0+, use `gitai update` for all future updates.
+
+## [0.1.0] - 2026-01-XX
+
 ### Added
 - **Ticket/Issue number integration**: Complete support for Jira, GitHub Issues, and custom ticketing systems
   - New `--ticket` / `-k` flag for command line

@@ -170,7 +170,7 @@ gitai commit
 
 ## Updating
 
-### Self-Update (Recommended)
+### Self-Update (Recommended for v0.2.0+)
 
 GitAI includes a built-in self-update command that works regardless of how you installed it:
 
@@ -191,17 +191,22 @@ The update command will:
 - Verify the binary using SHA256 checksums
 - Replace your current binary with the new version
 
+> **Note for v0.1.0 users:** The `update` command was introduced in v0.2.0. If you're on v0.1.0, use one of the alternative methods below to upgrade first.
+
 ### Alternative Update Methods
+
+**Via Install Script (works for all versions):**
+```bash
+# macOS/Linux
+curl -sSL https://raw.githubusercontent.com/xyue92/gitai/main/scripts/install.sh | bash
+
+# Windows (PowerShell)
+iwr -useb https://raw.githubusercontent.com/xyue92/gitai/main/scripts/install.ps1 | iex
+```
 
 **Via Homebrew:**
 ```bash
 brew upgrade gitai
-```
-
-**Via Install Script:**
-```bash
-# Re-run the install script
-curl -sSL https://raw.githubusercontent.com/xyue92/gitai/main/scripts/install.sh | bash
 ```
 
 ## Usage
