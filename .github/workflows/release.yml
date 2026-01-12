@@ -83,6 +83,17 @@ jobs:
         run: |
           mkdir -p release
           find artifacts -type f -exec cp {} release/ \;
+
+          # Create unified checksums.txt for self-update feature
+          cd release
+          for file in gitai-*; do
+            if [[ ! "$file" == *.sha256 ]]; then
+              shasum -a 256 "$file" >> checksums.txt
+            fi
+          done
+          cat checksums.txt
+          cd ..
+
           ls -lah release/
 
       - name: Create Release
@@ -93,14 +104,24 @@ jobs:
           prerelease: false
           generate_release_notes: true
           body: |
-            ## Installation
+            ## 🎉 What's New
 
-            ### Quick Install (macOS/Linux)
+            See the full changelog below for all changes in this release.
+
+            ## 📦 Installation
+
+            ### Self-Update (Existing Users)
+            If you already have GitAI installed, simply run:
+            ```bash
+            gitai update
+            ```
+
+            ### Quick Install (New Users - macOS/Linux)
             ```bash
             curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/install.sh | bash
             ```
 
-            ### Homebrew (macOS)
+            ### Homebrew (macOS/Linux)
             ```bash
             brew install xyue92/tap/gitai
             ```
@@ -113,9 +134,13 @@ jobs:
             ### Manual Installation
             Download the binary for your platform below and add it to your PATH.
 
-            ### Verify checksums
+            ## 🔒 Verify Checksums
             ```bash
+            # Using individual .sha256 files
             sha256sum -c gitai-<platform>.sha256
+
+            # Or using checksums.txt
+            sha256sum --ignore-missing -c checksums.txt
             ```
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

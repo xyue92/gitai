@@ -107,7 +107,9 @@ Use this checklist for each release:
 - [ ] Tag pushed to GitHub
 - [ ] GitHub Actions workflow completed successfully
 - [ ] All binaries present in GitHub Release
+- [ ] Checksums file (checksums.txt) uploaded to release
 - [ ] Install script tested
+- [ ] Self-update command tested (`gitai update --check`)
 - [ ] Homebrew formula updated (if applicable)
 - [ ] Release announcement written (optional)
 
