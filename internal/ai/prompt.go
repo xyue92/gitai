@@ -3,6 +3,8 @@ package ai
 import (
 	"fmt"
 	"strings"
+
+	"github.com/xyue92/gitai/internal/i18n"
 )
 
 // ProjectContext holds information about the project for context-aware commit messages
@@ -22,11 +24,12 @@ type PromptBuilder struct {
 	Diff             string
 	Context          ProjectContext
 	Language         string
-	DetailedCommit   bool   // If true, generate multi-line commit with body
-	CustomPrompt     string // Custom company/team commit guidelines
-	TicketNumber     string // Ticket/issue number (e.g., JIRA-123)
-	SubjectLength    string // Subject length: "short" (36 chars) or "normal" (72 chars)
-	RegenerateCount  int    // Number of times regenerated (adds variation hints)
+	Languages        []string // Multiple languages for multilingual commits
+	DetailedCommit   bool     // If true, generate multi-line commit with body
+	CustomPrompt     string   // Custom company/team commit guidelines
+	TicketNumber     string   // Ticket/issue number (e.g., JIRA-123)
+	SubjectLength    string   // Subject length: "short" (36 chars) or "normal" (72 chars)
+	RegenerateCount  int      // Number of times regenerated (adds variation hints)
 }
 
 // Build constructs the complete prompt for Ollama
@@ -83,11 +86,30 @@ func (pb *PromptBuilder) Build() string {
 		prompt.WriteString(fmt.Sprintf("IMPORTANT: Include the ticket number [%s] in the commit message.\n", pb.TicketNumber))
 	}
 
+	// Determine language(s) to use
 	language := pb.Language
 	if language == "" {
 		language = "en"
 	}
-	prompt.WriteString(fmt.Sprintf("Language: %s\n\n", language))
+
+	// Check if multilingual mode
+	isMultilingual := len(pb.Languages) > 1
+	if isMultilingual {
+		prompt.WriteString("\nLANGUAGES:\n")
+		prompt.WriteString(i18n.GetMultilingualInstructions(pb.Languages))
+		prompt.WriteString("\n")
+	} else {
+		// Single language mode
+		effectiveLang := language
+		if len(pb.Languages) == 1 {
+			effectiveLang = pb.Languages[0]
+		}
+
+		// Get language-specific template
+		langTemplate := i18n.GetLanguageTemplate(effectiveLang, pb.CommitType, pb.Scope)
+		prompt.WriteString(langTemplate.LanguageInstruction)
+		prompt.WriteString("\n\n")
+	}
 
 	// Changed files
 	if len(pb.Context.ChangedFiles) > 0 {
@@ -126,58 +148,130 @@ func (pb *PromptBuilder) Build() string {
 	}
 	prompt.WriteString(fmt.Sprintf("2. Subject line: concise summary (max %d characters)\n", maxLength))
 
-	if pb.DetailedCommit {
-		// Detailed mode: include body with explanations
-		prompt.WriteString("3. Body: explain WHAT changed and WHY (2-4 bullet points)\n")
-		prompt.WriteString("4. Focus on the motivation and impact, not implementation details\n")
-		prompt.WriteString(fmt.Sprintf("5. Use %s language\n", language))
-		prompt.WriteString("6. Start subject line with lowercase letter after the type\n")
-		prompt.WriteString("7. Separate subject and body with a blank line\n\n")
+	if isMultilingual {
+		// Multilingual mode requirements
+		prompt.WriteString("3. Primary language for subject line: " + pb.Languages[0] + "\n")
+		prompt.WriteString("4. Provide translations for all configured languages\n")
+		if pb.DetailedCommit {
+			prompt.WriteString("5. Body: explain WHAT changed and WHY (2-4 bullet points in primary language)\n")
+			prompt.WriteString("6. Include translation section with subject line in each language\n")
+			prompt.WriteString("7. Start subject line with lowercase letter after the type\n")
+			prompt.WriteString("8. Separate subject and body with a blank line\n\n")
+		} else {
+			prompt.WriteString("5. Focus on WHAT changed and WHY (concise)\n")
+			prompt.WriteString("6. Include translation section with subject line in each language\n")
+			prompt.WriteString("7. Start with lowercase letter after the type\n\n")
+		}
 	} else {
-		// Concise mode: subject line only
-		prompt.WriteString("3. Focus on WHAT changed and WHY (concise)\n")
-		prompt.WriteString(fmt.Sprintf("4. Use %s language\n", language))
-		prompt.WriteString("5. Start with lowercase letter after the type\n")
-		prompt.WriteString("6. Generate ONLY the subject line, no body or explanation\n\n")
+		// Single language mode
+		if pb.DetailedCommit {
+			// Detailed mode: include body with explanations
+			prompt.WriteString("3. Body: explain WHAT changed and WHY (2-4 bullet points)\n")
+			prompt.WriteString("4. Focus on the motivation and impact, not implementation details\n")
+			prompt.WriteString("5. Start subject line with lowercase letter after the type\n")
+			prompt.WriteString("6. Separate subject and body with a blank line\n\n")
+		} else {
+			// Concise mode: subject line only
+			prompt.WriteString("3. Focus on WHAT changed and WHY (concise)\n")
+			prompt.WriteString("4. Start with lowercase letter after the type\n")
+			prompt.WriteString("5. Generate ONLY the subject line, no body or explanation\n\n")
+		}
 	}
 
 	// Output format
 	prompt.WriteString("OUTPUT FORMAT:\n")
 
+	// Get effective language for examples
+	effectiveLang := language
+	if len(pb.Languages) > 0 {
+		effectiveLang = pb.Languages[0]
+	}
+
+	// Get language-specific template
+	langTemplate := i18n.GetLanguageTemplate(effectiveLang, pb.CommitType, pb.Scope)
+
 	// Build format string based on ticket presence
-	var formatStr, exampleSubject string
+	var formatStr string
 	if pb.TicketNumber != "" {
 		if pb.Scope != "" {
 			formatStr = fmt.Sprintf("%s(%s): [%s] <subject line>", pb.CommitType, pb.Scope, pb.TicketNumber)
-			exampleSubject = fmt.Sprintf("%s(%s): [%s] add user authentication endpoint", pb.CommitType, pb.Scope, pb.TicketNumber)
 		} else {
 			formatStr = fmt.Sprintf("%s: [%s] <subject line>", pb.CommitType, pb.TicketNumber)
-			exampleSubject = fmt.Sprintf("%s: [%s] add user authentication endpoint", pb.CommitType, pb.TicketNumber)
 		}
 	} else {
 		if pb.Scope != "" {
 			formatStr = fmt.Sprintf("%s(%s): <subject line>", pb.CommitType, pb.Scope)
-			exampleSubject = fmt.Sprintf("%s(%s): add user authentication endpoint", pb.CommitType, pb.Scope)
 		} else {
 			formatStr = fmt.Sprintf("%s: <subject line>", pb.CommitType)
-			exampleSubject = fmt.Sprintf("%s: add user authentication endpoint", pb.CommitType)
 		}
 	}
 
-	if pb.DetailedCommit {
-		// Detailed format with body
+	if isMultilingual {
+		// Multilingual format
+		prompt.WriteString(formatStr + "\n\n")
+		if pb.DetailedCommit {
+			prompt.WriteString("<body with bullet points in primary language>\n\n")
+			prompt.WriteString("Translations:\n")
+			for i := 1; i < len(pb.Languages); i++ {
+				langName := pb.Languages[i]
+				if lang, ok := i18n.GetLanguage(pb.Languages[i]); ok {
+					langName = lang.NativeName
+				}
+				prompt.WriteString(fmt.Sprintf("- [%s] <translated subject line>\n", langName))
+			}
+			prompt.WriteString("\n")
+		} else {
+			prompt.WriteString("\nTranslations:\n")
+			for i := 1; i < len(pb.Languages); i++ {
+				langName := pb.Languages[i]
+				if lang, ok := i18n.GetLanguage(pb.Languages[i]); ok {
+					langName = lang.NativeName
+				}
+				prompt.WriteString(fmt.Sprintf("- [%s] <translated subject line>\n", langName))
+			}
+			prompt.WriteString("\n")
+		}
+
+		prompt.WriteString("Example:\n")
+		prompt.WriteString(langTemplate.ExampleSubject + "\n\n")
+		if pb.DetailedCommit && len(langTemplate.ExampleBody) > 0 {
+			for _, line := range langTemplate.ExampleBody {
+				prompt.WriteString("- " + line + "\n")
+			}
+			prompt.WriteString("\n")
+		}
+
+		// Add translation examples for other languages
+		if len(pb.Languages) > 1 {
+			prompt.WriteString("Translations:\n")
+			for i := 1; i < len(pb.Languages); i++ {
+				otherTemplate := i18n.GetLanguageTemplate(pb.Languages[i], pb.CommitType, pb.Scope)
+				langName := pb.Languages[i]
+				if lang, ok := i18n.GetLanguage(pb.Languages[i]); ok {
+					langName = lang.NativeName
+				}
+				prompt.WriteString(fmt.Sprintf("- [%s] %s\n", langName, otherTemplate.ExampleSubject))
+			}
+			prompt.WriteString("\n")
+		}
+
+		prompt.WriteString("Generate the multilingual commit message now:\n")
+	} else if pb.DetailedCommit {
+		// Single language, detailed format with body
 		prompt.WriteString(formatStr + "\n\n<body with bullet points>\n\n")
 		prompt.WriteString("Example:\n")
-		prompt.WriteString(exampleSubject + "\n\n")
-		prompt.WriteString("- Implement JWT-based authentication\n")
-		prompt.WriteString("- Add login and logout endpoints\n")
-		prompt.WriteString("- Include token validation middleware\n\n")
-		prompt.WriteString("Generate the commit message now (subject + body with details):\n")
+		prompt.WriteString(langTemplate.ExampleSubject + "\n\n")
+		if len(langTemplate.ExampleBody) > 0 {
+			for _, line := range langTemplate.ExampleBody {
+				prompt.WriteString("- " + line + "\n")
+			}
+		}
+		prompt.WriteString("\nGenerate the commit message now (subject + body with details):\n")
 	} else {
-		// Concise format - subject only
+		// Single language, concise format - subject only
 		prompt.WriteString(formatStr + "\n\n")
 		prompt.WriteString("Example:\n")
-		prompt.WriteString(exampleSubject + "\n\n")
+		prompt.WriteString(langTemplate.ExampleSubject + "\n\n")
 		prompt.WriteString("Generate the commit message now (ONLY the subject line):\n")
 	}
 

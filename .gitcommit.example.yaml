@@ -5,8 +5,27 @@
 # Popular options: qwen2.5-coder:7b, mistral:7b, codellama:7b
 model: "qwen2.5-coder:7b"
 
-# Language for commit messages (en, zh, etc.)
+# Language Configuration
+# =====================
+
+# Single language mode: Set language to your preferred language code
+# Supported: en (English), zh (Chinese), ja (Japanese), ko (Korean),
+#           de (German), fr (French), es (Spanish), pt (Portuguese),
+#           ru (Russian), it (Italian)
 language: "en"
+
+# Multilingual mode: Uncomment 'languages' to generate commit messages in multiple languages
+# The first language is the primary language for the subject line
+# Additional languages will be included as translations in the commit body
+# languages:
+#   - "en"  # Primary language (English)
+#   - "zh"  # Add Chinese translation
+#   - "ja"  # Add Japanese translation
+
+# Auto-detect language from project (README, commits, documentation)
+# If enabled, GitAI will analyze your project to determine the appropriate language
+# This setting is ignored if 'languages' (multilingual mode) is set
+# auto_detect_language: true
 
 # Commit message template
 # Available variables: {type}, {scope}, {emoji}, {message}

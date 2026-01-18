@@ -10,19 +10,21 @@ import (
 
 // Config holds the application configuration
 type Config struct {
-	Model          string       `yaml:"model"`
-	Language       string       `yaml:"language"`
-	Types          []CommitType `yaml:"types"`
-	Template       string       `yaml:"template"`
-	Scopes         []string     `yaml:"scopes"`
-	CustomPrompt   string       `yaml:"custom_prompt,omitempty"`
-	MaxDiffLength  int          `yaml:"max_diff_length,omitempty"`
-	DetailedCommit bool         `yaml:"detailed_commit,omitempty"` // Generate detailed commit messages with body
-	PromptScope    bool         `yaml:"prompt_scope,omitempty"`    // Whether to prompt for scope (default: false)
-	RequireTicket  bool         `yaml:"require_ticket,omitempty"`  // Require ticket/issue number
-	TicketPattern  string       `yaml:"ticket_pattern,omitempty"`  // Pattern for ticket numbers (e.g., "PROJ-\d+")
-	TicketPrefix   string       `yaml:"ticket_prefix,omitempty"`   // Default ticket prefix (e.g., "JIRA", "PROJ")
-	SubjectLength  string       `yaml:"subject_length,omitempty"`  // Subject length: "short" (36 chars) or "normal" (72 chars)
+	Model              string       `yaml:"model"`
+	Language           string       `yaml:"language"`
+	Languages          []string     `yaml:"languages,omitempty"`           // Multiple languages for multilingual commits
+	AutoDetectLanguage bool         `yaml:"auto_detect_language,omitempty"` // Auto-detect language from project
+	Types              []CommitType `yaml:"types"`
+	Template           string       `yaml:"template"`
+	Scopes             []string     `yaml:"scopes"`
+	CustomPrompt       string       `yaml:"custom_prompt,omitempty"`
+	MaxDiffLength      int          `yaml:"max_diff_length,omitempty"`
+	DetailedCommit     bool         `yaml:"detailed_commit,omitempty"` // Generate detailed commit messages with body
+	PromptScope        bool         `yaml:"prompt_scope,omitempty"`    // Whether to prompt for scope (default: false)
+	RequireTicket      bool         `yaml:"require_ticket,omitempty"`  // Require ticket/issue number
+	TicketPattern      string       `yaml:"ticket_pattern,omitempty"`  // Pattern for ticket numbers (e.g., "PROJ-\d+")
+	TicketPrefix       string       `yaml:"ticket_prefix,omitempty"`   // Default ticket prefix (e.g., "JIRA", "PROJ")
+	SubjectLength      string       `yaml:"subject_length,omitempty"`  // Subject length: "short" (36 chars) or "normal" (72 chars)
 }
 
 // CommitType defines a type of commit with description and emoji
@@ -139,4 +141,19 @@ func (c *Config) Save(path string) error {
 	}
 
 	return nil
+}
+
+// GetEffectiveLanguages returns the list of languages to use for commit messages
+// If Languages is set (multilingual mode), returns that list
+// Otherwise, returns a single-element list with Language
+func (c *Config) GetEffectiveLanguages() []string {
+	if len(c.Languages) > 0 {
+		return c.Languages
+	}
+	return []string{c.Language}
+}
+
+// IsMultilingual returns true if multiple languages are configured
+func (c *Config) IsMultilingual() bool {
+	return len(c.Languages) > 1
 }
