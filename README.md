@@ -4,6 +4,7 @@ GitAI is a CLI tool that uses local Ollama models to generate intelligent, conte
 
 ## Features
 
+- **🪝 Git Hooks Automation**: One-time setup, then just `git commit` - GitAI automatically generates messages
 - **Privacy First**: Uses local Ollama models - your code never leaves your machine
 - **Interactive**: Select commit type, scope, and review generated messages
 - **Context-Aware**: Analyzes project structure, recent commits, and README to generate better messages
@@ -151,6 +152,28 @@ go install github.com/xyue92/gitai@latest
 
 ## Quick Start
 
+### 🚀 Recommended: Automated Mode (with Git Hooks)
+
+**One-time setup, then forget about it!**
+
+1. **Navigate to your git repository & install hooks**:
+```bash
+cd your-project
+gitai hooks install
+```
+
+2. **Use Git normally - GitAI works automatically**:
+```bash
+git add .
+git commit        # GitAI automatically generates the message!
+```
+
+That's it! From now on, every `git commit` will auto-generate messages.
+
+### 🔧 Alternative: Manual Mode
+
+If you prefer manual control:
+
 1. **Navigate to your git repository**:
 ```bash
 cd your-project
@@ -235,6 +258,18 @@ gitai commit --dry-run
 #### Update GitAI
 ```bash
 gitai update
+```
+
+#### Manage Git Hooks (Automation)
+```bash
+# Install hooks for automatic message generation
+gitai hooks install
+
+# Check hook status
+gitai hooks status
+
+# Uninstall hooks
+gitai hooks uninstall
 ```
 
 #### View Commit Statistics
@@ -526,6 +561,7 @@ MIT License - see LICENSE file for details
 ## Documentation
 
 📚 **Comprehensive Guides:**
+- [Git Hooks Automation Guide](docs/GIT_HOOKS_GUIDE.md) - Set up automatic commit message generation ⭐ NEW
 - [Intelligent Diff Analysis Guide](INTELLIGENT_DIFF_GUIDE.md) - Deep dive into smart diff analysis
 - [Multilingual Support Guide](MULTILINGUAL_GUIDE.md) - Using GitAI in multiple languages
 - [Commit Statistics Guide](docs/STATS_GUIDE.md) - Analyzing commit patterns and quality

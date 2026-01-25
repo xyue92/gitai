@@ -10,6 +10,10 @@ import (
 	"github.com/xyue92/gitai/internal/ui"
 )
 
+var (
+	quietFlag bool
+)
+
 var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generate commit message without committing",
@@ -24,11 +28,16 @@ func init() {
 	generateCmd.Flags().StringVarP(&scopeFlag, "scope", "s", "", "Commit scope (skip selection)")
 	generateCmd.Flags().StringVarP(&langFlag, "language", "l", "", "Message language (en/zh)")
 	generateCmd.Flags().StringVarP(&modelFlag, "model", "m", "", "Ollama model to use")
+	generateCmd.Flags().BoolVarP(&quietFlag, "quiet", "q", false, "Quiet mode - only output the message")
 }
 
 func runGenerate(cmd *cobra.Command, args []string) error {
 	display := ui.NewDisplay()
-	display.ShowHeader()
+
+	// In quiet mode, suppress all output except the final message
+	if !quietFlag {
+		display.ShowHeader()
+	}
 
 	// Check if in git repository
 	if !git.IsGitRepository() {
@@ -61,8 +70,10 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to get file changes: %w", err)
 	}
 
-	// Display changed files
-	display.ShowChangedFiles(fileChanges)
+	// Display changed files (skip in quiet mode)
+	if !quietFlag {
+		display.ShowChangedFiles(fileChanges)
+	}
 
 	// Create selector for interactive prompts
 	selector := ui.NewCommitSelector(cfg)
@@ -70,15 +81,20 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	// Select commit type
 	commitType := typeFlag
 	if commitType == "" {
-		commitType, err = selector.SelectType()
-		if err != nil {
-			return fmt.Errorf("type selection cancelled")
+		// In quiet mode, use default "feat" if no type specified
+		if quietFlag {
+			commitType = "feat"
+		} else {
+			commitType, err = selector.SelectType()
+			if err != nil {
+				return fmt.Errorf("type selection cancelled")
+			}
 		}
 	}
 
 	// Select scope
 	scope := scopeFlag
-	if scopeFlag == "" {
+	if scopeFlag == "" && !quietFlag {
 		scope, err = selector.SelectScope()
 		if err != nil {
 			return fmt.Errorf("scope selection cancelled")
@@ -86,7 +102,10 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Get project context
-	display.ShowGenerating()
+	if !quietFlag {
+		display.ShowGenerating()
+	}
+
 	ctx, err := git.GetProjectContext()
 	if err != nil {
 		ctx = git.ProjectContext{}
@@ -121,6 +140,12 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 
 	// Clean up the message
 	message = cleanCommitMessage(message)
+
+	// In quiet mode, just print the message
+	if quietFlag {
+		fmt.Println(message)
+		return nil
+	}
 
 	// Display generated message
 	fmt.Println()
