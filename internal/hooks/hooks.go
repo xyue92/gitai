@@ -207,10 +207,10 @@ if [ "$COMMIT_SOURCE" = "message" ] || [ "$COMMIT_SOURCE" = "merge" ] || [ "$COM
     exit 0
 fi
 
-# Skip if template already has content (except comments)
+# Skip if template already has REAL content (not just comments and empty lines)
 if [ -s "$COMMIT_MSG_FILE" ]; then
-    # Check if file has non-comment content
-    if grep -qv '^#' "$COMMIT_MSG_FILE" 2>/dev/null; then
+    # Check if file has non-comment, non-empty content
+    if grep -vE '^\s*(#|$)' "$COMMIT_MSG_FILE" | grep -q .; then
         exit 0
     fi
 fi
